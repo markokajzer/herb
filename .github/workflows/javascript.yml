@@ -44,7 +44,7 @@ jobs:
         uses: mymindstorm/setup-emsdk@v14
         with:
           version: 5.0.2
-          actions-cache-folder: emsdk-cache
+          actions-cache-folder: emsdk-cache-javascript
 
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1

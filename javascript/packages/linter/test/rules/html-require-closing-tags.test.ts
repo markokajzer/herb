@@ -83,6 +83,7 @@ describe("html-require-closing-tags", () => {
       expectError('Missing explicit closing tag for `<li>`. Use `</li>` instead of relying on implicit tag closing.')
       expectError('Missing explicit closing tag for `<li>`. Use `</li>` instead of relying on implicit tag closing.')
       expectError('Missing explicit closing tag for `<li>`. Use `</li>` instead of relying on implicit tag closing.')
+
       assertOffenses(dedent`
         <ul>
           <li>Item 1
@@ -97,6 +98,7 @@ describe("html-require-closing-tags", () => {
       expectError('Missing explicit closing tag for `<dd>`. Use `</dd>` instead of relying on implicit tag closing.')
       expectError('Missing explicit closing tag for `<dt>`. Use `</dt>` instead of relying on implicit tag closing.')
       expectError('Missing explicit closing tag for `<dd>`. Use `</dd>` instead of relying on implicit tag closing.')
+
       assertOffenses(dedent`
         <dl>
           <dt>Term 1
@@ -116,6 +118,7 @@ describe("html-require-closing-tags", () => {
       expectError('Missing explicit closing tag for `<td>`. Use `</td>` instead of relying on implicit tag closing.')
       expectError('Missing explicit closing tag for `<td>`. Use `</td>` instead of relying on implicit tag closing.')
       expectError('Missing explicit closing tag for `<tr>`. Use `</tr>` instead of relying on implicit tag closing.')
+
       assertOffenses(dedent`
         <table>
           <thead>
@@ -134,6 +137,7 @@ describe("html-require-closing-tags", () => {
       expectError('Missing explicit closing tag for `<option>`. Use `</option>` instead of relying on implicit tag closing.')
       expectError('Missing explicit closing tag for `<option>`. Use `</option>` instead of relying on implicit tag closing.')
       expectError('Missing explicit closing tag for `<option>`. Use `</option>` instead of relying on implicit tag closing.')
+
       assertOffenses(dedent`
         <select>
           <option>Option 1
@@ -146,6 +150,7 @@ describe("html-require-closing-tags", () => {
     test("fails for paragraphs", () => {
       expectError('Missing explicit closing tag for `<p>`. Use `</p>` instead of relying on implicit tag closing.')
       expectError('Missing explicit closing tag for `<p>`. Use `</p>` instead of relying on implicit tag closing.')
+
       assertOffenses(dedent`
         <div>
           <p>Paragraph 1
@@ -158,6 +163,7 @@ describe("html-require-closing-tags", () => {
   test("only flags elements with omitted closing tags when mixed", () => {
     expectError('Missing explicit closing tag for `<li>`. Use `</li>` instead of relying on implicit tag closing.')
     expectError('Missing explicit closing tag for `<li>`. Use `</li>` instead of relying on implicit tag closing.')
+
     assertOffenses(dedent`
       <ul>
         <li>Item with omitted closing tag

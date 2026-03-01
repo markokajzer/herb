@@ -1,17 +1,20 @@
+import picomatch from "picomatch"
+
 import { Location } from "@herb-tools/core"
 import { IdentityPrinter } from "@herb-tools/printer"
-import picomatch from "picomatch"
 
 import { rules } from "./rules.js"
 import { findNodeByLocation } from "./rules/rule-utils.js"
 import { parseHerbDisableLine } from "./herb-disable-comment-utils.js"
 import { hasLinterIgnoreDirective } from "./linter-ignore.js"
+import { ParseCache } from "./parse-cache.js"
 
 import { ParserNoErrorsRule } from "./rules/parser-no-errors.js"
+
 import { DEFAULT_RULE_CONFIG } from "./types.js"
 
 import type { RuleClass, Rule, ParserRule, LexerRule, SourceRule, LintResult, LintOffense, UnboundLintOffense, LintContext, AutofixResult } from "./types.js"
-import type { ParseResult, LexResult, HerbBackend, ParserOptions } from "@herb-tools/core"
+import type { ParseResult, LexResult, HerbBackend } from "@herb-tools/core"
 import type { RuleConfig, Config } from "@herb-tools/config"
 
 export interface LinterOptions {
@@ -48,6 +51,7 @@ export class Linter {
   protected rules: RuleClass[]
   protected allAvailableRules: RuleClass[]
   protected herb: HerbBackend
+  protected parseCache: ParseCache
   protected offenses: LintOffense[]
   protected config?: Config
 
@@ -81,6 +85,7 @@ export class Linter {
    */
   constructor(herb: HerbBackend, rules?: RuleClass[], config?: Config, allAvailableRules?: RuleClass[]) {
     this.herb = herb
+    this.parseCache = new ParseCache(herb)
     this.config = config
     this.rules = rules !== undefined ? rules : this.getDefaultRules()
     this.allAvailableRules = allAvailableRules !== undefined ? allAvailableRules : this.rules
@@ -298,32 +303,6 @@ export class Linter {
     return { kept, ignored, wouldBeIgnored: [] }
   }
 
-  /**
-   * Build a map of parser options key → ParseResult for all unique parser options
-   * declared by the current rules. Rules that don't declare parserOptions use an empty object.
-   */
-  private buildParseCache(source: string): Map<string, ParseResult> {
-    const parseCache = new Map<string, ParseResult>()
-
-    const uniqueParserOptions = new Set<string>(["{}"])
-    for (const ruleClass of this.rules) {
-      const parserOptions = new ruleClass().defaultConfig?.parserOptions ?? {}
-      const key = JSON.stringify(parserOptions) || "{}"
-      uniqueParserOptions.add(key)
-    }
-
-    for (const key of uniqueParserOptions) {
-      const parserOptions = JSON.parse(key) as Partial<ParserOptions>
-      parseCache.set(key, this.herb.parse(source, { track_whitespace: true, ...parserOptions }))
-    }
-
-    return parseCache
-  }
-
-  private getParseCacheKeyForRule(rule: Rule): string {
-    const parserOptions = rule.defaultConfig?.parserOptions ?? {}
-    return JSON.stringify(parserOptions)
-  }
 
   /**
    * Lint source code using Parser/AST, Lexer, and Source rules.
@@ -336,8 +315,7 @@ export class Linter {
     let ignoredCount = 0
     let wouldBeIgnoredCount = 0
 
-    const parseCache = this.buildParseCache(source)
-    const parseResult = parseCache.get("{}")!
+    const parseResult = this.parseCache.get(source)
 
     // Check for file-level ignore directive using visitor
     if (hasLinterIgnoreDirective(parseResult)) {
@@ -389,7 +367,8 @@ export class Linter {
 
     for (const RuleClass of regularRules) {
       const rule = new RuleClass()
-      const parseResult = parseCache.get(this.getParseCacheKeyForRule(rule))!
+      const parserOptions = this.isParserRule(rule) ? rule.parserOptions : {}
+      const parseResult = this.parseCache.get(source, parserOptions)
 
       // Skip parser rules whose parse result has errors (parser-no-errors handled above)
       // Skip lexer/source rules when the default parse has errors
@@ -423,7 +402,7 @@ export class Linter {
 
     if (unnecessaryRuleClass) {
       const unnecessaryRule = new unnecessaryRuleClass() as ParserRule
-      const parseResult = parseCache.get(this.getParseCacheKeyForRule(unnecessaryRule))!
+      const parseResult = this.parseCache.get(source, unnecessaryRule.parserOptions)
       const unboundOffenses = unnecessaryRule.check(parseResult, context)
       const boundOffenses = this.bindSeverity(unboundOffenses, unnecessaryRule.name)
 
@@ -530,7 +509,7 @@ export class Linter {
     const unfixed: LintOffense[] = []
 
     if (parserOffenses.length > 0) {
-      const parseResult = this.herb.parse(currentSource, { track_whitespace: true })
+      const parseResult = this.parseCache.get(currentSource)
 
       for (const offense of parserOffenses) {
         const RuleClass = this.rules.find(rule => new rule().name === offense.rule)
@@ -558,14 +537,12 @@ export class Linter {
 
         if (offense.autofixContext) {
           const originalNodeType = offense.autofixContext.node.type
-          const originalTagName = (offense.autofixContext.node as any).tag_name?.value
           const location: Location = offense.autofixContext.node.location ? Location.from(offense.autofixContext.node.location) : offense.location
 
           const freshNode = findNodeByLocation(
             parseResult.value,
             location,
-            (node) => node.type === originalNodeType &&
-              (originalNodeType !== "AST_HTML_OMITTED_CLOSE_TAG_NODE" || (node as any).tag_name?.value === originalTagName)
+            (node) => node.type === originalNodeType
           )
 
           if (freshNode) {

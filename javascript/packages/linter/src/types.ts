@@ -1,8 +1,7 @@
 import { Diagnostic, LexResult, ParseResult } from "@herb-tools/core"
 
 import type { rules } from "./rules.js"
-import type { Node } from "@herb-tools/core"
-import type { ParserOptions } from "@herb-tools/core"
+import type { Node, ParserOptions } from "@herb-tools/core"
 import type { RuleConfig } from "@herb-tools/config"
 import type { Mutable } from "@herb-tools/rewriter"
 
@@ -10,9 +9,11 @@ export type { Mutable } from "@herb-tools/rewriter"
 
 export type LintSeverity = "error" | "warning" | "info" | "hint"
 
-export type FullRuleConfig = Required<Pick<RuleConfig, 'enabled' | 'severity'>> & Omit<RuleConfig, 'enabled' | 'severity'> & {
-  parserOptions?: Partial<ParserOptions>
+export const DEFAULT_LINTER_PARSER_OPTIONS: Partial<ParserOptions> = {
+  track_whitespace: true,
 }
+
+export type FullRuleConfig = Required<Pick<RuleConfig, 'enabled' | 'severity'>> & Omit<RuleConfig, 'enabled' | 'severity'>
 
 /**
  * Automatically inferred union type of all available linter rule names.
@@ -95,6 +96,11 @@ export abstract class ParserRule<TAutofixContext extends BaseAutofixContext = Ba
   get defaultConfig(): FullRuleConfig {
     return DEFAULT_RULE_CONFIG
   }
+
+  get parserOptions(): Partial<ParserOptions> {
+    return DEFAULT_LINTER_PARSER_OPTIONS
+  }
+
   abstract check(result: ParseResult, context?: Partial<LintContext>): UnboundLintOffense<TAutofixContext>[]
 
   /**

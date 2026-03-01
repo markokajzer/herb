@@ -3,7 +3,9 @@
 #include "include/range.h"
 #include "include/token_struct.h"
 #include "include/util.h"
+#include "include/util/hb_buffer.h"
 
+#include <stdarg.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -78,8 +80,82 @@ const char* token_type_to_string(const token_type_T type) {
     case TOKEN_ERROR: return "TOKEN_ERROR";
     case TOKEN_EOF: return "TOKEN_EOF";
   }
+}
 
-  return "Unknown token_type_T";
+const char* token_type_to_friendly_string(const token_type_T type) {
+  switch (type) {
+    case TOKEN_WHITESPACE: return "whitespace";
+    case TOKEN_NBSP: return "non-breaking space";
+    case TOKEN_NEWLINE: return "a newline";
+    case TOKEN_IDENTIFIER: return "an identifier";
+    case TOKEN_HTML_DOCTYPE: return "`<!DOCTYPE`";
+    case TOKEN_XML_DECLARATION: return "`<?xml`";
+    case TOKEN_XML_DECLARATION_END: return "`?>`";
+    case TOKEN_CDATA_START: return "`<![CDATA[`";
+    case TOKEN_CDATA_END: return "`]]>`";
+    case TOKEN_HTML_TAG_START: return "`<`";
+    case TOKEN_HTML_TAG_END: return "`>`";
+    case TOKEN_HTML_TAG_START_CLOSE: return "`</`";
+    case TOKEN_HTML_TAG_SELF_CLOSE: return "`/>`";
+    case TOKEN_HTML_COMMENT_START: return "`<!--`";
+    case TOKEN_HTML_COMMENT_END: return "`-->`";
+    case TOKEN_HTML_COMMENT_INVALID_END: return "`--!>`";
+    case TOKEN_EQUALS: return "`=`";
+    case TOKEN_QUOTE: return "a quote";
+    case TOKEN_BACKTICK: return "a backtick";
+    case TOKEN_BACKSLASH: return "`\\`";
+    case TOKEN_DASH: return "`-`";
+    case TOKEN_UNDERSCORE: return "`_`";
+    case TOKEN_EXCLAMATION: return "`!`";
+    case TOKEN_SLASH: return "`/`";
+    case TOKEN_SEMICOLON: return "`;`";
+    case TOKEN_COLON: return "`:`";
+    case TOKEN_AT: return "`@`";
+    case TOKEN_LT: return "`<`";
+    case TOKEN_PERCENT: return "`%`";
+    case TOKEN_AMPERSAND: return "`&`";
+    case TOKEN_ERB_START: return "`<%`";
+    case TOKEN_ERB_CONTENT: return "ERB content";
+    case TOKEN_ERB_END: return "`%>`";
+    case TOKEN_CHARACTER: return "a character";
+    case TOKEN_ERROR: return "an error token";
+    case TOKEN_EOF: return "end of file";
+  }
+}
+
+char* token_types_to_friendly_string_valist(token_type_T first_token, va_list args) {
+  if ((int) first_token == TOKEN_SENTINEL) { return herb_strdup(""); }
+
+  size_t count = 0;
+  const char* names[32];
+  token_type_T current = first_token;
+
+  while ((int) current != TOKEN_SENTINEL && count < 32) {
+    names[count++] = token_type_to_friendly_string(current);
+    current = va_arg(args, token_type_T);
+  }
+
+  hb_buffer_T buffer;
+  hb_buffer_init(&buffer, 128);
+
+  for (size_t i = 0; i < count; i++) {
+    hb_buffer_append(&buffer, names[i]);
+
+    if (i < count - 1) {
+      if (count > 2) { hb_buffer_append(&buffer, ", "); }
+      if (i == count - 2) { hb_buffer_append(&buffer, count == 2 ? " or " : "or "); }
+    }
+  }
+
+  return hb_buffer_value(&buffer);
+}
+
+char* token_types_to_friendly_string_va(token_type_T first_token, ...) {
+  va_list args;
+  va_start(args, first_token);
+  char* result = token_types_to_friendly_string_valist(first_token, args);
+  va_end(args);
+  return result;
 }
 
 hb_string_T token_to_string(const token_T* token) {

@@ -260,17 +260,7 @@ static AST_HTML_TEXT_NODE_T* parser_parse_text_content(parser_T* parser, hb_arra
     if (token_is(parser, TOKEN_ERROR)) {
       free(content.value);
 
-      token_T* token = parser_consume_expected(parser, TOKEN_ERROR, document_errors);
-      append_unexpected_error(
-        "Token Error",
-        "not TOKEN_ERROR",
-        token->value,
-        token->location.start,
-        token->location.end,
-        document_errors
-      );
-
-      token_free(token);
+      parser_append_unexpected_error_string(parser, document_errors, "Token Error", "not an error token");
 
       return NULL;
     }
@@ -641,7 +631,7 @@ static AST_HTML_ATTRIBUTE_VALUE_NODE_T* parser_parse_html_attribute_value(parser
     append_unexpected_error(
       "Invalid quote character for HTML attribute",
       "single quote (') or double quote (\")",
-      "backtick (`)",
+      "a backtick",
       start,
       end,
       errors
@@ -655,14 +645,18 @@ static AST_HTML_ATTRIBUTE_VALUE_NODE_T* parser_parse_html_attribute_value(parser
     return value;
   }
 
+  char* expected = token_types_to_friendly_string(TOKEN_IDENTIFIER, TOKEN_QUOTE, TOKEN_ERB_START);
+
   append_unexpected_error(
     "Unexpected Token",
-    "TOKEN_IDENTIFIER, TOKEN_QUOTE, TOKEN_ERB_START",
-    token_type_to_string(parser->current_token->type),
+    expected,
+    token_type_to_friendly_string(parser->current_token->type),
     parser->current_token->location.start,
     parser->current_token->location.end,
     errors
   );
+
+  free(expected);
 
   AST_HTML_ATTRIBUTE_VALUE_NODE_T* value = ast_html_attribute_value_node_init(
     NULL,
@@ -1057,9 +1051,13 @@ static AST_HTML_OPEN_TAG_NODE_T* parser_parse_html_open_tag(parser_T* parser) {
 
     parser_append_unexpected_error(
       parser,
+      errors,
       "Unexpected Token",
-      "TOKEN_IDENTIFIER, TOKEN_AT, TOKEN_ERB_START,TOKEN_WHITESPACE, or TOKEN_NEWLINE",
-      errors
+      TOKEN_IDENTIFIER,
+      TOKEN_AT,
+      TOKEN_ERB_START,
+      TOKEN_WHITESPACE,
+      TOKEN_NEWLINE
     );
   }
 
@@ -1474,10 +1472,17 @@ static void parser_parse_in_data_state(parser_T* parser, hb_array_T* children, h
 
     parser_append_unexpected_error(
       parser,
+      errors,
       "Unexpected token",
-      "TOKEN_ERB_START, TOKEN_HTML_DOCTYPE, TOKEN_HTML_COMMENT_START, TOKEN_IDENTIFIER, TOKEN_WHITESPACE, "
-      "TOKEN_NBSP, TOKEN_AT, TOKEN_BACKSLASH, or TOKEN_NEWLINE",
-      errors
+      TOKEN_ERB_START,
+      TOKEN_HTML_DOCTYPE,
+      TOKEN_HTML_COMMENT_START,
+      TOKEN_IDENTIFIER,
+      TOKEN_WHITESPACE,
+      TOKEN_NBSP,
+      TOKEN_AT,
+      TOKEN_BACKSLASH,
+      TOKEN_NEWLINE
     );
 
     parser_synchronize(parser, errors);

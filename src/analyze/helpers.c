@@ -2,8 +2,8 @@
 #include <stdbool.h>
 #include <string.h>
 
-#include "include/analyzed_ruby.h"
-#include "include/util/string.h"
+#include "../include/analyze/analyzed_ruby.h"
+#include "../include/util/string.h"
 
 bool has_if_node(analyzed_ruby_T* analyzed) {
   return analyzed->if_node_count > 0;

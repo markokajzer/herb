@@ -1,5 +1,5 @@
 #include "include/herb.h"
-#include "include/analyze.h"
+#include "include/analyze/analyze.h"
 #include "include/io.h"
 #include "include/lexer.h"
 #include "include/parser.h"

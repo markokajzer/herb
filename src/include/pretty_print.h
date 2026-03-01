@@ -1,7 +1,7 @@
 #ifndef HERB_PRETTY_PRINT_H
 #define HERB_PRETTY_PRINT_H
 
-#include "analyzed_ruby.h"
+#include "analyze/analyzed_ruby.h"
 #include "ast_nodes.h"
 #include "location.h"
 #include "util/hb_buffer.h"

@@ -1,12 +1,12 @@
-#include "include/analyze_conditional_open_tags.h"
-#include "include/ast_nodes.h"
-#include "include/element_source.h"
-#include "include/errors.h"
-#include "include/token_struct.h"
-#include "include/util.h"
-#include "include/util/hb_array.h"
-#include "include/util/hb_string.h"
-#include "include/visitor.h"
+#include "../include/analyze/conditional_open_tags.h"
+#include "../include/ast_nodes.h"
+#include "../include/element_source.h"
+#include "../include/errors.h"
+#include "../include/token_struct.h"
+#include "../include/util.h"
+#include "../include/util/hb_array.h"
+#include "../include/util/hb_string.h"
+#include "../include/visitor.h"
 
 #include <stdbool.h>
 #include <stdlib.h>

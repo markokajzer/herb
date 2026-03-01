@@ -2,8 +2,8 @@
 #define HERB_ANALYZE_H
 
 #include "analyzed_ruby.h"
-#include "ast_nodes.h"
-#include "util/hb_array.h"
+#include "../ast_nodes.h"
+#include "../util/hb_array.h"
 
 typedef struct ANALYZE_RUBY_CONTEXT_STRUCT {
   AST_DOCUMENT_NODE_T* document;

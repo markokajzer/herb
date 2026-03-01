@@ -115,8 +115,8 @@ rust/src/union_types.rs
 rust/src/visitor.rs
 sig/serialized_ast_errors.rbs
 sig/serialized_ast_nodes.rbs
-src/analyze_missing_end.c
-src/analyze_transform.c
+src/analyze/missing_end.c
+src/analyze/transform.c
 src/ast_nodes.c
 src/ast_pretty_print.c
 src/errors.c

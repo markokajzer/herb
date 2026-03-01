@@ -363,7 +363,7 @@ export function findAttributeByName(attributes: Node[], attributeName: string): 
 /**
  * Checks if a tag has a specific attribute
  */
-export function hasAttribute(node: HTMLOpenTagNode | null | undefined, attributeName: string): boolean {
+export function hasAttribute(node: HTMLOpenTagNode | null | undefined, attributeName: string): boolean {
   if (!node) return false
 
   return getAttribute(node, attributeName) !== null
@@ -643,7 +643,7 @@ export abstract class AttributeVisitorMixin<TAutofixContext extends BaseAutofixC
   private checkAttributesOnNode(node: HTMLOpenTagNode): void {
     forEachAttribute(node, (attributeNode) => {
       const staticAttributeName = getAttributeName(attributeNode)
-      const originalAttributeName = getAttributeName(attributeNode, false) || ""
+      const originalAttributeName = getAttributeName(attributeNode, false) || ""
       const isDynamicName = hasDynamicAttributeName(attributeNode)
       const staticAttributeValue = getStaticAttributeValue(attributeNode)
       const valueNodes = getAttributeValueNodes(attributeNode)

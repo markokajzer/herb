@@ -3,6 +3,7 @@ import type { RuleClass } from "./types.js"
 import { ERBCommentSyntax } from "./rules/erb-comment-syntax.js";
 import { ERBNoCaseNodeChildrenRule } from "./rules/erb-no-case-node-children.js"
 import { ERBNoConditionalHTMLElementRule } from "./rules/erb-no-conditional-html-element.js"
+import { ERBNoConditionalOpenTagRule } from "./rules/erb-no-conditional-open-tag.js"
 import { ERBNoEmptyTagsRule } from "./rules/erb-no-empty-tags.js"
 import { ERBNoExtraNewLineRule } from "./rules/erb-no-extra-newline.js"
 import { ERBNoExtraWhitespaceRule } from "./rules/erb-no-extra-whitespace-inside-tags.js"
@@ -23,6 +24,7 @@ import { HerbDisableCommentMissingRulesRule } from "./rules/herb-disable-comment
 import { HerbDisableCommentMalformedRule } from "./rules/herb-disable-comment-malformed.js"
 import { HerbDisableCommentUnnecessaryRule } from "./rules/herb-disable-comment-unnecessary.js"
 
+import { HTMLAllowedScriptTypeRule } from "./rules/html-allowed-script-type.js"
 import { HTMLAnchorRequireHrefRule } from "./rules/html-anchor-require-href.js"
 import { HTMLAriaAttributeMustBeValid } from "./rules/html-aria-attribute-must-be-valid.js"
 import { HTMLAriaLabelIsWellFormattedRule } from "./rules/html-aria-label-is-well-formatted.js"
@@ -66,6 +68,7 @@ export const rules: RuleClass[] = [
   ERBCommentSyntax,
   ERBNoCaseNodeChildrenRule,
   ERBNoConditionalHTMLElementRule,
+  ERBNoConditionalOpenTagRule,
   ERBNoEmptyTagsRule,
   ERBNoExtraNewLineRule,
   ERBNoExtraWhitespaceRule,
@@ -86,6 +89,7 @@ export const rules: RuleClass[] = [
   HerbDisableCommentMalformedRule,
   HerbDisableCommentUnnecessaryRule,
 
+  HTMLAllowedScriptTypeRule,
   HTMLAnchorRequireHrefRule,
   HTMLAriaAttributeMustBeValid,
   HTMLAriaLabelIsWellFormattedRule,

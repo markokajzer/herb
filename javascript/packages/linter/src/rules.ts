@@ -26,6 +26,7 @@ import { ERBNoUnsafeJSAttributeRule } from "./rules/erb-no-unsafe-js-attribute.j
 import { ERBNoUnsafeRawRule } from "./rules/erb-no-unsafe-raw.js"
 import { ERBNoUnsafeScriptInterpolationRule } from "./rules/erb-no-unsafe-script-interpolation.js"
 import { ERBPreferImageTagHelperRule } from "./rules/erb-prefer-image-tag-helper.js"
+import { ERBRequireScriptNonceRule } from "./rules/erb-require-script-nonce.js"
 import { ERBRequireTrailingNewlineRule } from "./rules/erb-require-trailing-newline.js"
 import { ERBRequireWhitespaceRule } from "./rules/erb-require-whitespace-inside-tags.js"
 import { ERBRightTrimRule } from "./rules/erb-right-trim.js"
@@ -51,8 +52,8 @@ import { HTMLAttributeEqualsSpacingRule } from "./rules/html-attribute-equals-sp
 import { HTMLAttributeValuesRequireQuotesRule } from "./rules/html-attribute-values-require-quotes.js"
 import { HTMLAvoidBothDisabledAndAriaDisabledRule } from "./rules/html-avoid-both-disabled-and-aria-disabled.js"
 import { HTMLBodyOnlyElementsRule } from "./rules/html-body-only-elements.js"
-import { HTMLDetailsHasSummaryRule } from "./rules/html-details-has-summary.js"
 import { HTMLBooleanAttributesNoValueRule } from "./rules/html-boolean-attributes-no-value.js"
+import { HTMLDetailsHasSummaryRule } from "./rules/html-details-has-summary.js"
 import { HTMLHeadOnlyElementsRule } from "./rules/html-head-only-elements.js"
 import { HTMLIframeHasTitleRule } from "./rules/html-iframe-has-title.js"
 import { HTMLImgRequireAltRule } from "./rules/html-img-require-alt.js"
@@ -97,6 +98,7 @@ export const rules: RuleClass[] = [
   ERBNoInstanceVariablesInPartialsRule,
   ERBNoInterpolatedClassNamesRule,
   ERBNoJavascriptTagHelperRule,
+  ERBRequireScriptNonceRule,
   ERBNoOutputControlFlowRule,
   ERBNoOutputInAttributeNameRule,
   ERBNoOutputInAttributePositionRule,
